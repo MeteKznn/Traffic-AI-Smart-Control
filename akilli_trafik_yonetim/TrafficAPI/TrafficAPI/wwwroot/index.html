@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic AI - Smart Control</title>
+    <!-- Google Fonts: Inter is perfect for this UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen" class="auth-container hidden">
+        <div id="login-form-container" class="auth-card">
+            <div class="auth-logo"><i class="fa-solid fa-traffic-light"></i> Traffic AI</div>
+            <p>Sisteme Giriş</p>
+            <input type="text" id="login-username" placeholder="Kullanıcı Adı" class="input-field" value="admin">
+            <input type="password" id="login-password" placeholder="Şifre" class="input-field" value="admin123">
+            <button onclick="login()" class="btn btn-primary w-100">Giriş Yap</button>
+            <p class="auth-switch" onclick="toggleAuth('register')">Hesap Oluştur</p>
+        </div>
+        
+        <div id="register-form-container" class="auth-card hidden">
+            <div class="auth-logo"><i class="fa-solid fa-traffic-light"></i> Traffic AI</div>
+            <p>Kayıt Ol</p>
+            <input type="text" id="reg-username" placeholder="Kullanıcı Adı" class="input-field">
+            <input type="password" id="reg-password" placeholder="Şifre" class="input-field">
+            <input type="email" id="reg-email" placeholder="E-Posta" class="input-field">
+            <button onclick="register()" class="btn btn-success w-100">Kayıt Ol</button>
+            <p class="auth-switch" onclick="toggleAuth('login')">Giriş Ekranına Dön</p>
+        </div>
+    </div>
+
+    <!-- APP SCREEN (Mockup Layout) -->
+    <div id="app-screen" class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-traffic-light"></i></div>
+                <div class="brand-text">
+                    <h1>Traffic AI</h1>
+                    <p>Smart Control</p>
+                </div>
+            </div>
+
+            <div class="theme-toggle">
+                <p>Tema</p>
+                <div class="toggle-buttons">
+                    <button class="active"><i class="fa-regular fa-sun"></i> Aydınlık</button>
+                    <button><i class="fa-regular fa-moon"></i> Karanlık</button>
+                </div>
+            </div>
+
+            <nav class="side-nav">
+                <ul>
+                    <li onclick="navigate('dashboard', this)"><i class="fa-solid fa-border-all"></i> Genel Bakış</li>
+                    <li class="active" onclick="navigate('monitoring', this)"><i class="fa-solid fa-satellite-dish"></i> Canlı İzleme <span class="dot"></span></li>
+                    <li onclick="navigate('builder', this)"><i class="fa-solid fa-map-location-dot"></i> Kavşak Oluştur</li>
+                    <li onclick="navigate('analytics', this)"><i class="fa-solid fa-chart-simple"></i> Raporlar</li>
+                    <li onclick="navigate('settings', this)"><i class="fa-solid fa-gear"></i> Ayarlar</li>
+                </ul>
+            </nav>
+
+            <div class="system-status">
+                <h4>Sistem Durumu</h4>
+                <div class="status-item"><span>CPU</span> <span class="val text-green"><span class="dot-sm green"></span> 27%</span></div>
+                <div class="status-item"><span>Bellek</span> <span class="val text-orange"><span class="dot-sm orange"></span> 85%</span></div>
+                <div class="status-item"><span>Ağ</span> <span class="val text-green"><span class="dot-sm green"></span> 0ms</span></div>
+            </div>
+            
+            <button onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap</button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <header class="main-header">
+                <h2>Trafik İzleme</h2>
+                <div style="display:flex; align-items:center; gap:1.5rem;">
+                    <select id="intersection-selector" class="input-field" style="margin-bottom:0; width:250px; font-weight:600;" onchange="loadSelectedIntersection()">
+                        <option value="">Kavşak Seçiniz...</option>
+                    </select>
+                    <div class="live-badge"><span class="dot-sm green"></span> Canlı</div>
+                </div>
+            </header>
+
+            <!-- 1. MONITORING PAGE (The Mockup Screen) -->
+            <section id="page-monitoring" class="page-section">
+                <div class="monitoring-grid">
+                    
+                    <!-- Left: Intersection Card -->
+                    <div class="card map-card">
+                        
+                        <div class="map-header">
+                            <div class="location-info">
+                                <div class="loc-icon"><i class="fa-solid fa-traffic-light"></i></div>
+                                <div>
+                                    <h3>Times Square District</h3>
+                                    <p>User: Admin-Repo</p>
+                                </div>
+                            </div>
+                            <div class="status-badge">
+                                <span class="dot-sm green"></span> AKTİF
+                                <span>Canlı Veri Aktarımı</span>
+                            </div>
+                        </div>
+
+                        <div class="map-tabs">
+                            <button class="active">Canlı</button>
+                            <button>İstatistikler</button>
+                            <button>Geçmiş</button>
+                        </div>
+
+                        <!-- THE BEAUTIFUL INTERSECTION VISUAL -->
+                        <div class="simulation-container">
+                            <div class="sim-road-h">
+                                <div class="road-line"></div>
+                                <span class="road-label label-w">BROADWAY</span>
+                            </div>
+                            <div class="sim-road-v">
+                                <div class="road-line"></div>
+                                <span class="road-label label-n">42ND ST</span>
+                            </div>
+                            <div class="sim-intersection-center"></div>
+
+                            <!-- Traffic Lights (Capsules) -->
+                            <!-- North Light -->
+                            <div class="sim-light light-n" id="light-n">
+                                <div class="sim-bulb green active"></div>
+                                <div class="sim-bulb yellow"></div>
+                                <div class="sim-bulb red"></div>
+                                <div class="sim-timer">29</div>
+                            </div>
+                            <!-- South Light -->
+                            <div class="sim-light light-s" id="light-s">
+                                <div class="sim-bulb green active"></div>
+                                <div class="sim-bulb yellow"></div>
+                                <div class="sim-bulb red"></div>
+                                <div class="sim-timer">29</div>
+                            </div>
+                            <!-- East Light -->
+                            <div class="sim-light light-e" id="light-e">
+                                <div class="sim-bulb green"></div>
+                                <div class="sim-bulb yellow"></div>
+                                <div class="sim-bulb red active"></div>
+                                <div class="sim-timer" style="color:#ef4444;">--</div>
+                            </div>
+                            <!-- West Light -->
+                            <div class="sim-light light-w" id="light-w">
+                                <div class="sim-bulb green"></div>
+                                <div class="sim-bulb yellow"></div>
+                                <div class="sim-bulb red active"></div>
+                                <div class="sim-timer" style="color:#ef4444;">--</div>
+                            </div>
+
+                            <!-- Cars will be injected here via JS -->
+                            <div id="sim-vehicles"></div>
+                        </div>
+
+                        <!-- Bottom Stats Cards -->
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <p>ARAÇLAR</p>
+                                <h4>1,247</h4>
+                                <span class="trend up">+12%</span>
+                            </div>
+                            <div class="stat-card">
+                                <p>BEKLEME SÜRESİ</p>
+                                <h4>3.2m</h4>
+                                <span class="trend down">-8%</span>
+                            </div>
+                            <div class="stat-card">
+                                <p>VERİMLİLİK</p>
+                                <h4>87%</h4>
+                                <span class="trend up">+5%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Traffic Control Panel -->
+                    <div class="card control-card">
+                        <h3>Trafik Kontrolü</h3>
+                        
+                        <div class="control-buttons">
+                            <button class="ctrl-btn btn-danger-outline" onclick="simEmergency()">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <div>
+                                    <strong>Acil Durum Modu</strong>
+                                    <span>Tüm yönleri anında kırmızı yap</span>
+                                </div>
+                            </button>
+                            
+                            <button class="ctrl-btn btn-primary-outline" onclick="simNormalMode()">
+                                <i class="fa-solid fa-stopwatch"></i>
+                                <div>
+                                    <strong>Normal Mod</strong>
+                                    <span>Kavşak sürelerine göre çalış</span>
+                                </div>
+                            </button>
+
+                            <button class="ctrl-btn btn-success-outline" onclick="simAutoMode()">
+                                <i class="fa-solid fa-robot"></i>
+                                <div>
+                                    <strong>Otomatik Mod</strong>
+                                    <span>Sensör öncelikli akıllı geçiş</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 2. INTERSECTION BUILDER PAGE (FORM & LIST) -->
+            <section id="page-builder" class="page-section hidden">
+                <div class="builder-grid">
+                    <!-- Left: Intersection List -->
+                    <div class="card builder-list-card">
+                        <div class="card-header-flex">
+                            <h3><i class="fa-solid fa-list"></i> Kayıtlı Kavşaklar</h3>
+                            <button class="btn btn-primary-outline btn-sm" onclick="prepareNewIntersection()"><i class="fa-solid fa-plus"></i> Yeni</button>
+                        </div>
+                        <div class="intersection-list-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kavşak Adı</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="intersection-table-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right: Intersection Form -->
+                    <div class="card builder-form-card">
+                        <h3 id="builder-form-title" style="margin-bottom:1rem;"><i class="fa-solid fa-map-location-dot"></i> Yeni Kavşak Oluştur</h3>
+                        <p class="text-muted" style="margin-bottom: 2rem;">İsimleri ve yeşil ışık sürelerini girerek sisteme yeni bir kavşak tanıtın veya mevcut olanı güncelleyin.</p>
+                        
+                        <input type="hidden" id="cfg-id" value="">
+                        
+                        <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Kavşak Adı:</label>
+                        <input type="text" id="cfg-name" class="input-field" placeholder="Örn: Merkez Meydanı Kavşağı">
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                            <div>
+                                <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Yatay Cadde Adı:</label>
+                                <input type="text" id="cfg-h-name" class="input-field" placeholder="Örn: Broadway">
+                            </div>
+                            <div>
+                                <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Yatay Yeşil Işık Süresi (Sn):</label>
+                                <input type="number" id="cfg-h-time" class="input-field" placeholder="30">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+                            <div>
+                                <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Dikey Cadde Adı:</label>
+                                <input type="text" id="cfg-v-name" class="input-field" placeholder="Örn: 42ND ST">
+                            </div>
+                            <div>
+                                <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Dikey Yeşil Işık Süresi (Sn):</label>
+                                <input type="number" id="cfg-v-time" class="input-field" placeholder="30">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-2" onclick="saveIntersectionConfig()"><i class="fa-solid fa-save"></i> Kavşağı Kaydet</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OTHER PAGES (Hidden by default) -->
+            <section id="page-dashboard" class="page-section hidden">
+                <div class="dashboard-overview-grid">
+                    <div class="stat-card dashboard-main-card">
+                        <div class="stat-icon"><i class="fa-solid fa-car-side"></i></div>
+                        <p>TOPLAM ARAÇ GEÇİŞİ</p>
+                        <h2 id="dash-total-vehicles">--</h2>
+                        <span class="trend up"><i class="fa-solid fa-arrow-trend-up"></i> +12% Son 24 Saat</span>
+                    </div>
+                    <div class="stat-card dashboard-main-card">
+                        <div class="stat-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <p>AKTİF KAVŞAK SAYISI</p>
+                        <h2 id="dash-active-intersections">--</h2>
+                        <span class="trend up"><i class="fa-solid fa-check"></i> Sistem Stabil</span>
+                    </div>
+                    <div class="stat-card dashboard-main-card">
+                        <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+                        <p>EN YOĞUN CADDE</p>
+                        <h2 id="dash-most-active-street">--</h2>
+                        <span class="trend down"><i class="fa-solid fa-triangle-exclamation"></i> Kritik Yoğunluk</span>
+                    </div>
+                    <div class="stat-card dashboard-main-card">
+                        <div class="stat-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                        <p>ORTALAMA BEKLEME</p>
+                        <h2 id="dash-avg-wait">--</h2>
+                        <span class="trend down"><i class="fa-solid fa-arrow-trend-down"></i> -8% İyileşme</span>
+                    </div>
+                </div>
+                
+                <!-- NEW CHARTS SECTION -->
+                <div class="dashboard-charts-grid mt-2">
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h3><i class="fa-solid fa-chart-line"></i> Saatlik Trafik Yoğunluğu</h3>
+                            <button class="btn btn-primary-outline btn-sm"><i class="fa-solid fa-download"></i> Raporu İndir</button>
+                        </div>
+                        <div style="height:300px; width:100%;"><canvas id="hourlyTrafficChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Kavşak Yoğunluk Oranları</h3>
+                            <button class="btn btn-success-outline btn-sm"><i class="fa-solid fa-robot"></i> AI Analizi</button>
+                        </div>
+                        <div style="height:300px; width:100%; display:flex; justify-content:center;"><canvas id="intersectionPieChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- NEW SYSTEM LOGS SECTION -->
+                <div class="card" style="margin-top: 2rem;">
+                    <h3><i class="fa-solid fa-list-check"></i> Son Sistem Olayları & Yapay Zeka Müdahaleleri</h3>
+                    <p class="text-muted" style="margin-bottom:1rem;">Trafik kontrol modülünün sisteme yaptığı otomatik müdahaleler ve kritik uyarılar.</p>
+                    <div class="intersection-list-container" style="max-height:250px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Zaman</th>
+                                    <th>Kavşak / Lokasyon</th>
+                                    <th>Olay Tipi</th>
+                                    <th>Açıklama</th>
+                                </tr>
+                            </thead>
+                            <tbody id="system-logs-body">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="page-analytics" class="page-section hidden">
+                <div class="card">
+                    <h3>Grafikler (Eski Dashboard)</h3>
+                    <div style="height:300px; width:100%;"><canvas id="trafficChart"></canvas></div>
+                </div>
+            </section>
+
+            <section id="page-settings" class="page-section hidden">
+                <div class="card" style="max-width: 500px; margin: 0 auto;">
+                    <h3 style="margin-bottom:1rem;"><i class="fa-solid fa-user-gear"></i> Profil Ayarları</h3>
+                    <p class="text-muted" style="margin-bottom: 2rem;">Hesap bilgilerinizi buradan güncelleyebilirsiniz.</p>
+                    
+                    <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Kullanıcı Adı (Değiştirilemez):</label>
+                    <input type="text" id="set-username" class="input-field" disabled>
+
+                    <label style="font-weight:600; margin-bottom:0.5rem; display:block;">E-Posta:</label>
+                    <input type="email" id="set-email" class="input-field">
+
+                    <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Telefon:</label>
+                    <input type="text" id="set-phone" class="input-field">
+
+                    <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Yeni Şifre (Boş bırakılabilir):</label>
+                    <input type="password" id="set-password" class="input-field" placeholder="Sadece değiştirmek istiyorsanız doldurun">
+
+                    <button class="btn btn-primary w-100 mt-2" onclick="updateUserProfile()"><i class="fa-solid fa-save"></i> Değişiklikleri Kaydet</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
